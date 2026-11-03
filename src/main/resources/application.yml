@@ -1,0 +1,39 @@
+spring:
+  main:
+    web-application-type: none
+  datasource:
+    url: jdbc:mysql://localhost:3306/job_application_manager?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME:}
+    password: ${GMAIL_APP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            protocols: TLSv1.2 TLSv1.3
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+app:
+  candidate:
+    name: ${CANDIDATE_NAME:Your Name}
+    email: ${CANDIDATE_EMAIL:${GMAIL_USERNAME:}}
+  resume:
+    directory: ${RESUME_DIRECTORY:./data/resumes}
+  mail:
+    delay-millis: ${MAIL_DELAY_MILLIS:3000}
