@@ -29,16 +29,17 @@ public class JobProviderConnectionService {
 
     public JobProviderConnectionService(
             JobProviderConfigurationService configService,
-            JobProviderCredentialService credentialService) {
+            JobProviderCredentialService credentialService,
+            RestClient restClient) {
         this.configService = configService;
         this.credentialService = credentialService;
+        this.restClient = restClient;
+    }
 
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(Duration.ofSeconds(6));
-        requestFactory.setReadTimeout(Duration.ofSeconds(8));
-        this.restClient = RestClient.builder()
-                .requestFactory(requestFactory)
-                .build();
+    public JobProviderConnectionService(
+            JobProviderConfigurationService configService,
+            JobProviderCredentialService credentialService) {
+        this(configService, credentialService, RestClient.builder().build());
     }
 
     /**
