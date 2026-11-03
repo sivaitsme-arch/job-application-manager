@@ -69,7 +69,7 @@ public class JobDiscoveryService {
                 allJobs.addAll(found);
                 providerStatusMessages.put(pName, "Success (" + found.size() + " jobs found)");
             } catch (Exception ex) {
-                log.error("Job provider search failed for provider: {}", pName, ex);
+                log.error("Job provider search failed for provider: {}: {}", pName, ex.getMessage());
                 providerStatusMessages.put(pName, "Error: " + ex.getMessage());
             }
         }
@@ -156,6 +156,9 @@ public class JobDiscoveryService {
      */
     public Set<String> extractResumeSkills() {
         Set<String> skills = new HashSet<>(List.of("Java", "Spring Boot", "MySQL", "REST", "Git", "Maven", "Hibernate"));
+        if (resumeDirectory == null || resumeDirectory.isBlank()) {
+            return skills;
+        }
         try {
             Path dir = Paths.get(resumeDirectory);
             if (!Files.exists(dir)) {
@@ -208,3 +211,4 @@ public class JobDiscoveryService {
             Set<String> candidateSkills
     ) {}
 }
+
