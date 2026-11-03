@@ -22,7 +22,11 @@ class JobProviderConnectionServiceTest {
     void setUp() {
         configService = Mockito.mock(JobProviderConfigurationService.class);
         credentialService = Mockito.mock(JobProviderCredentialService.class);
-        connectionService = new JobProviderConnectionService(configService, credentialService);
+        connectionService = new JobProviderConnectionService(
+                configService,
+                credentialService,
+                org.springframework.web.client.RestClient.builder().build()
+        );
     }
 
     @Test

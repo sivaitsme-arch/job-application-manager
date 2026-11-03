@@ -36,12 +36,6 @@ public class JobProviderConnectionService {
         this.restClient = restClient;
     }
 
-    public JobProviderConnectionService(
-            JobProviderConfigurationService configService,
-            JobProviderCredentialService credentialService) {
-        this(configService, credentialService, RestClient.builder().build());
-    }
-
     /**
      * Tests connectivity for a named provider using its saved configuration and credentials.
      */
