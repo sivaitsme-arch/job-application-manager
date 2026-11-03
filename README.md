@@ -1,83 +1,140 @@
-# Job Application Manager
+# Job Application Manager Enterprise
 
-A local JavaFX desktop application backed by Spring Boot, MySQL, Apache POI and Gmail SMTP.
-It imports job rows from Excel/CSV, creates editable email drafts, and sends one approved email at a time with a PDF resume attachment.
+A modern desktop application built with **JavaFX 21**, **Spring Boot 3.5.x**, **MySQL 8**, **Apache POI**, **Apache PDFBox**, and **Gmail SMTP**.
+It supports automated job discovery from multiple providers, resume-based skill and experience matching, interactive job application queueing, editable email drafts, and single-click approved email dispatching with PDF attachments.
+
+---
 
 ## 1. Requirements
-- Windows 10/11 (also works on macOS/Linux)
+- Windows 10/11, macOS, or Linux
 - JDK 17 or JDK 21
 - Maven 3.9+
 - MySQL 8.x running locally
-- Gmail account with 2-Step Verification enabled and an App Password
+- Gmail account with 2-Step Verification and an App Password
 
-## 2. Database setup
-Run `database/schema.sql` in MySQL Workbench or execute:
-```sql
-CREATE DATABASE IF NOT EXISTS job_application_manager CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+---
+
+## 2. Desktop Navigation Structure
+
+The application features a clean, professional dark navy desktop interface with dedicated navigation sections:
+
+```text
+Job Application Manager
+│
+├── Dashboard
+│   └── High-level metrics: Ingested, Ready, Sent, Failed, and Active Providers
+│
+├── Resume Profile
+│   └── Resume viewer and automated skill extraction using Apache PDFBox
+│
+├── Job Discovery
+│   └── Multi-provider search, India 3–5 yr filtering, and matching percentage calculation
+│
+├── Job Discovery Settings (Configuration Mode)
+│   ├── Adzuna (App ID, App Key, Country, Results Limit)
+│   ├── Jooble (API Key, Search Location, Results Limit)
+│   ├── Greenhouse (Board Tokens, Multiple Company Management, Public API Testing)
+│   └── Lever (Site Identifiers, Multiple Company Management, Postings Testing)
+│
+├── Excel Management
+│   └── Import & manage spreadsheet/CSV rows, duplicate skipping, validation
+│
+└── Email Applications
+    └── Email draft generation, rich preview/edit, and one-by-one approved sending
 ```
-The application uses Hibernate `ddl-auto: update` to create/update tables automatically.
 
-## 3. Configuration (.env)
-The application automatically reads configuration from `.env` in the project root on startup.
-You can copy `.env.example` to `.env`:
+---
+
+## 3. Job Discovery Configuration Mode
+
+Instead of configuring provider credentials through environment variables, you can configure, test, and manage all four job providers directly through the **Job Discovery Settings** UI:
+
+### Supported Providers
+1. **Adzuna**:
+   - Fields: Enable Provider, Application ID, Application Key (masked), Country Code (default `in`), Results Limit.
+   - Actions: Save Configuration, Test Connection (issues a live India search request to verify credentials), Reset.
+2. **Jooble**:
+   - Fields: Enable Provider, API Key (masked), Search Location (default `India`), Results Limit.
+   - Actions: Save Configuration, Test Connection, Reset.
+3. **Greenhouse**:
+   - Public job boards API integration.
+   - Add multiple company board tokens (e.g., `stripe`, `gitlab`, `airbnb`).
+   - Actions: Add Company, Remove Company, Toggle Active, Test Board Connection, Test All Configured Boards.
+4. **Lever**:
+   - Public postings API integration.
+   - Add multiple company site identifiers (e.g., `netflix`, `figma`).
+   - Actions: Add Company, Remove Company, Toggle Active, Test Site Connection, Test All Configured Sites.
+
+### Credential Security
+- Credentials are encrypted at rest using **AES-256-GCM** with a unique 12-byte `SecureRandom` IV and a 128-bit authentication tag.
+- Credentials are never logged or stored as plain text.
+- External key can be configured via environment variable `APP_ENCRYPTION_KEY` or `JOB_MANAGER_ENCRYPTION_KEY`.
+- If no key is set, the application automatically initializes a secure 256-bit persistent key in `data/.master_key`.
+- In the UI, credentials are automatically masked (e.g., `••••••••`).
+
+---
+
+## 4. Database Setup & Migration
+
+Execute `database/schema.sql` (or `database/job_provider_schema.sql` if upgrading an existing database) in MySQL:
+
+```powershell
+Get-Content database/schema.sql -Raw | & "C:\Program Files\MySQL\MySQL Server 8.4\bin\mysql.exe" -u root -proot
+```
+
+Tables created:
+- `job_application`: Applications, statuses (`IMPORTED`, `READY`, `SENT`, `FAILED`), email content, sent timestamps.
+- `job_provider_config`: Provider configurations, enabled flags, limits, and locations.
+- `job_provider_credential`: AES-256-GCM encrypted provider credentials.
+- `job_provider_company`: Configured company boards and site identifiers for Greenhouse and Lever.
+
+---
+
+## 5. Configuration (.env)
+
+The application automatically loads `.env` on startup. Copy `.env.example` to `.env`:
+
 ```env
 DB_USERNAME=root
-DB_PASSWORD=root
+DB_PASSWORD=your_mysql_password
 GMAIL_USERNAME=yourname@gmail.com
 GMAIL_APP_PASSWORD=your16characterapppassword
 CANDIDATE_NAME=Your Full Name
 RESUME_DIRECTORY=./data/resumes
 ```
+
 > [!NOTE]
-> Google App Passwords often contain spaces (e.g., `xxxx xxxx xxxx xxxx`). The application automatically sanitizes and removes spaces before authenticating with Gmail SMTP.
+> Google App Passwords copied with spaces (e.g. `xxxx xxxx xxxx xxxx`) are automatically sanitized and stripped of whitespace before connecting to Gmail SMTP.
 
-You can also set these as standard environment variables in PowerShell if preferred:
-```powershell
-$env:DB_USERNAME="root"
-$env:DB_PASSWORD="your_mysql_password"
-$env:GMAIL_USERNAME="yourname@gmail.com"
-$env:GMAIL_APP_PASSWORD="your16characterapppassword"
-$env:CANDIDATE_NAME="Your Full Name"
-```
+---
 
-## 4. Excel & CSV Templates
-Both Excel (`.xlsx`, `.xls`) and CSV (`.csv`) files are supported.
-The file must have a header row. Required columns (case-insensitive and tolerant to spaces/underscores):
-- `Company` (or `Company Name`)
-- `Job Role` (or `Role`, `Position`, `Job Title`)
-- `Email` (or `Recruiter Email`, `Contact Email`)
+## 6. How to Run
 
-Optional columns: `Location`, `Job URL`.
+From the project root:
 
-Example:
-| Company | Job Role | Email | Location | Job URL |
-|---|---|---|---|---|
-| Example Technologies | Java Developer | recruiter@example.com | Hyderabad | https://example.com/jobs/123 |
-
-## 5. Resumes
-Place your PDF resume in `./data/resumes/` to have it auto-detected on startup, or click **Select Resume PDF** in the application to browse for any PDF resume.
-
-## 6. Run
-From the project directory:
 ```powershell
 mvn clean javafx:run
 ```
-The JavaFX desktop window will open.
-1. Click **Import Jobs (Excel/CSV)** to import jobs from a spreadsheet or CSV.
-2. Select a row and click **Generate / Regenerate Draft** to prepare the email.
-3. Click **Preview / Edit Email** to inspect and customize the subject and body, then click **Save Draft**.
-4. Confirm your resume is selected.
-5. Click **Approve & Send** to send the email via Gmail SMTP.
 
-## 7. Workflow and Safety
-- Duplicates are automatically skipped using company + job role + recruiter email.
-- Emails are never sent automatically on import or draft generation; every email requires explicit approval.
-- Background sending ensures the desktop UI remains responsive and does not freeze.
-- `SENT` applications cannot be resent.
-- If sending fails, the status is marked as `FAILED` and full error details are displayed.
-- The **Delete** button allows removing unwanted records.
+1. Navigate to **Job Discovery Settings** to configure and enable your desired providers (Adzuna, Jooble, Greenhouse, Lever).
+2. Click **Test Connection** to verify that credentials and company board endpoints respond successfully.
+3. Open **Job Discovery** to discover jobs, view match percentages calculated against your resume, and click **Add to Applications** to queue jobs.
+4. Under **Email Applications**, select a row, click **Generate / Regenerate Draft**, inspect with **Preview / Edit Email**, and click **Approve & Send**.
 
-## 8. Troubleshooting
-- `Access denied for user`: check `DB_USERNAME` and `DB_PASSWORD` in `.env`.
-- `Communications link failure`: ensure MySQL service (e.g., `MySQL84`) is running locally on port 3306.
-- `AuthenticationFailedException`: verify `GMAIL_USERNAME` and generate a fresh 16-character Google App Password under Google Account -> Security -> 2-Step Verification -> App Passwords.
+---
+
+## 7. Running Unit Tests
+
+To run the complete test suite:
+
+```powershell
+mvn test
+```
+
+Unit tests cover:
+- AES-256-GCM encryption/decryption, random IV differentiation, and credential masking.
+- Provider configuration CRUD, enable/disable toggling, and duplicate company prevention.
+- Connection testing, credential validation, and timeout handling.
+- Dynamic provider execution and provider failure isolation.
+- Resume-based skill extraction and match percentage scoring.
+- Excel and CSV parsing and import regression.
