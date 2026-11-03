@@ -11,3 +11,4 @@ public interface JobProvider {
     ConnectionTestResult testConnection();
     List<DiscoveredJob> search(String query, String location, int limit);
 }
+

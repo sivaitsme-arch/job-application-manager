@@ -71,3 +71,4 @@ public class ProviderStatusComponent extends VBox {
         detailsLabel.setText(message);
     }
 }
+

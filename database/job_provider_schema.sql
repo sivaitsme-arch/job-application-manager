@@ -43,3 +43,4 @@ VALUES
 ('JOOBLE', FALSE, 'in', 'India', 20),
 ('GREENHOUSE', FALSE, 'in', 'Global/Remote', 25),
 ('LEVER', FALSE, 'in', 'Global/Remote', 25);
+

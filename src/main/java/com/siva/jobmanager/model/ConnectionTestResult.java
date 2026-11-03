@@ -45,3 +45,4 @@ public class ConnectionTestResult {
         return "[" + status + "] " + providerName + (httpStatusCode != null ? " (HTTP " + httpStatusCode + ")" : "") + ": " + message;
     }
 }
+

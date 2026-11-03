@@ -149,3 +149,4 @@ public class JobProviderEncryptionService {
         return "••••••••" + value.substring(value.length() - 4);
     }
 }
+

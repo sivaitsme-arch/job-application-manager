@@ -41,3 +41,4 @@ class JobProviderEncryptionServiceTest {
         assertEquals("••••••••9012", JobProviderEncryptionService.mask("secret-token-3456789012"));
     }
 }
+

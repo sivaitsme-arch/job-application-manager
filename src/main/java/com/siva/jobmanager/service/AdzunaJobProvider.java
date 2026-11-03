@@ -113,3 +113,4 @@ public class AdzunaJobProvider implements JobProvider {
         return jobs;
     }
 }
+

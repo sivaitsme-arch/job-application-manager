@@ -10,3 +10,4 @@ public interface JobProviderConfigRepository extends JpaRepository<JobProviderCo
     List<JobProviderConfig> findByEnabledTrue();
     boolean existsByProviderNameIgnoreCase(String providerName);
 }
+

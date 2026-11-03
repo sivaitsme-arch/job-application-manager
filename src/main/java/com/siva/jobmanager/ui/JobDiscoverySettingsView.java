@@ -541,3 +541,4 @@ public class JobDiscoverySettingsView extends VBox {
         alert.showAndWait();
     }
 }
+

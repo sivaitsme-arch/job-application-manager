@@ -12,3 +12,4 @@ public interface JobProviderCompanyRepository extends JpaRepository<JobProviderC
     boolean existsByProviderNameIgnoreCaseAndCompanyNameIgnoreCase(String providerName, String companyName);
     Optional<JobProviderCompany> findByProviderNameIgnoreCaseAndBoardIdentifierIgnoreCase(String providerName, String boardIdentifier);
 }
+

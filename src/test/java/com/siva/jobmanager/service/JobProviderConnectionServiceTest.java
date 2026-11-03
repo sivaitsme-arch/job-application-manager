@@ -73,3 +73,4 @@ class JobProviderConnectionServiceTest {
         assertTrue(result.getMessage().contains("No companies configured"));
     }
 }
+

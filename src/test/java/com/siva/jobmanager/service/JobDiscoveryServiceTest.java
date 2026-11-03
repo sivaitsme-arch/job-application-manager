@@ -109,3 +109,4 @@ class JobDiscoveryServiceTest {
         verify(applicationRepository, times(1)).save(any(JobApplication.class));
     }
 }
+

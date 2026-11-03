@@ -78,3 +78,4 @@ class JobProviderConfigurationServiceTest {
         verify(companyRepository, times(1)).deleteById(42L);
     }
 }
+

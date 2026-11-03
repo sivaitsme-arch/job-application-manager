@@ -56,3 +56,4 @@ public class DiscoveredJob {
     public String getContactEmail() { return contactEmail; }
     public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
 }
+

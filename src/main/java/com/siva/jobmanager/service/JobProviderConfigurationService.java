@@ -143,3 +143,4 @@ public class JobProviderConfigurationService {
         return saved;
     }
 }
+

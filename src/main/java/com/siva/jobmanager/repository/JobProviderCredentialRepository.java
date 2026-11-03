@@ -10,3 +10,4 @@ public interface JobProviderCredentialRepository extends JpaRepository<JobProvid
     Optional<JobProviderCredential> findByProviderConfigIdAndCredentialKeyIgnoreCase(Long providerConfigId, String credentialKey);
     void deleteByProviderConfigId(Long providerConfigId);
 }
+
